@@ -94,7 +94,7 @@ import './index.css';
         const desc = move ? `Przejdz do ruchu #${move}  [${history[move].coordinates[0]},${history[move].coordinates[1]}]` : 'Przejdz na poczatek gry';
         return(
           <li key={move}>
-            <button onClick={() => this.jumpTo(move)}>{desc}</button>
+            <button onClick={() => this.jumpTo(move)} style={this.state.stepNumber===move ? { fontWeight: 'bold'} : {}} >{desc}</button>
           </li>
         )
       });
