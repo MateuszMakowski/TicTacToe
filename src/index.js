@@ -24,25 +24,23 @@ import './index.css';
     }
   
     render() {
-      return (
+      var rows = [];
+      var squares = [];
+      var i = 0
+      do {
+        do{
+          squares.push(this.renderSquare(i));
+          i++;
+        }while (squares.length < 3);
+        rows.push(<div className="board-row">{squares}</div>);
+        squares=[];
+      }while(rows.length < 3);
+
+      return(
         <div>
-          <div className="board-row">
-            {this.renderSquare(0)}
-            {this.renderSquare(1)}
-            {this.renderSquare(2)}
-          </div>
-          <div className="board-row">
-            {this.renderSquare(3)}
-            {this.renderSquare(4)}
-            {this.renderSquare(5)}
-          </div>
-          <div className="board-row">
-            {this.renderSquare(6)}
-            {this.renderSquare(7)}
-            {this.renderSquare(8)}
-          </div>
+          {rows}
         </div>
-      );
+      )
     }
   }
   
