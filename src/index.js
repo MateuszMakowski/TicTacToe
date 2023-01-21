@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
 
   function Square(props){
       return (
@@ -53,7 +55,12 @@ import './index.css';
         }],
         stepNumber: 0,
         xIsNext: true,
+        sortOrder: false,
       };
+    }
+
+    onSort(){
+      this.setState({sortOrder: !this.state.sortOrder});
     }
 
     handleClick(i){
@@ -87,6 +94,9 @@ import './index.css';
       const history = this.state.history;
       const current = history[this.state.stepNumber];
       const winner = calculateWinner(current.squares);
+      const sort =  (<button onClick={() => this.onSort()}>
+      {this.state.sortOrder ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
+      </button>)
 
       const moves = history.map((step, move)=>{
         const desc = move ? `Przejdz do ruchu #${move}  [${history[move].coordinates[0]},${history[move].coordinates[1]}]` : 'Przejdz na poczatek gry';
@@ -103,7 +113,7 @@ import './index.css';
       }else{
         status = 'Nastepny gracz: ' + (this.state.xIsNext ? 'X' : '0');
       }
-
+      
       return (
         <div className="game">
           <div className="game-board">
@@ -114,7 +124,7 @@ import './index.css';
           </div>
           <div className="game-info">
             <div>{status}</div>
-            <ol>{moves}</ol>
+            <ol>{sort}{this.state.sortOrder ? moves.reverse() : moves}</ol>
           </div>
         </div>
       );
