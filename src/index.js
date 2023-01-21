@@ -102,7 +102,7 @@ import { faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
         const desc = move ? `Przejdz do ruchu #${move}  [${history[move].coordinates[0]},${history[move].coordinates[1]}]` : 'Przejdz na poczatek gry';
         return(
           <li key={move}>
-            <button onClick={() => this.jumpTo(move)} style={this.state.stepNumber===move ? { fontWeight: 'bold'} : {}} >{desc}</button>
+            <button onClick={() => this.jumpTo(move)} style={this.state.stepNumber===move || (winner && move >= this.state.stepNumber - 2) ? { fontWeight: 'bold'} : {}} >{desc}</button>
           </li>
         )
       });
@@ -110,6 +110,8 @@ import { faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
       let status;
       if(winner){
         status = 'Wygrywa: ' + winner;
+      }else if(this.state.history.length === 10){
+        status = 'Remis: Brak mozliwych ruchow';
       }else{
         status = 'Nastepny gracz: ' + (this.state.xIsNext ? 'X' : '0');
       }
