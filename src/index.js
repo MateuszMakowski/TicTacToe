@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
 
   function Square(props){
       return (
@@ -24,25 +26,23 @@ import './index.css';
     }
   
     render() {
-      return (
+      var rows = [];
+      var squares = [];
+      var i = 0
+      do {
+        do{
+          squares.push(this.renderSquare(i));
+          i++;
+        }while (squares.length < 3);
+        rows.push(<div className="board-row">{squares}</div>);
+        squares=[];
+      }while(rows.length < 3);
+
+      return(
         <div>
-          <div className="board-row">
-            {this.renderSquare(0)}
-            {this.renderSquare(1)}
-            {this.renderSquare(2)}
-          </div>
-          <div className="board-row">
-            {this.renderSquare(3)}
-            {this.renderSquare(4)}
-            {this.renderSquare(5)}
-          </div>
-          <div className="board-row">
-            {this.renderSquare(6)}
-            {this.renderSquare(7)}
-            {this.renderSquare(8)}
-          </div>
+          {rows}
         </div>
-      );
+      )
     }
   }
   
@@ -55,13 +55,20 @@ import './index.css';
         }],
         stepNumber: 0,
         xIsNext: true,
+        sortOrder: false,
       };
+    }
+
+    onSort(){
+      this.setState({sortOrder: !this.state.sortOrder});
     }
 
     handleClick(i){
       const history = this.state.history.slice(0, this.state.stepNumber +1);
       const current = history[history.length - 1];
       const squares = current.squares.slice();
+      const column = (i%3) + 1;
+      const row = Math.floor(i/3) + 1;
       if(calculateWinner(squares) || squares[i]){
         return;
       }
@@ -69,6 +76,7 @@ import './index.css';
       this.setState({
         history: history.concat([{
           squares: squares,
+          coordinates: [column, row],
         }]),
         stepNumber: history.length,
         xIsNext: !this.state.xIsNext,
@@ -86,12 +94,15 @@ import './index.css';
       const history = this.state.history;
       const current = history[this.state.stepNumber];
       const winner = calculateWinner(current.squares);
+      const sort =  (<button onClick={() => this.onSort()}>
+      {this.state.sortOrder ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
+      </button>)
 
       const moves = history.map((step, move)=>{
-        const desc = move ? 'Przejdz do ruchu #' + move : 'Przejdz na poczatek gry';
+        const desc = move ? `Przejdz do ruchu #${move}  [${history[move].coordinates[0]},${history[move].coordinates[1]}]` : 'Przejdz na poczatek gry';
         return(
           <li key={move}>
-            <button onClick={() => this.jumpTo(move)}>{desc}</button>
+            <button onClick={() => this.jumpTo(move)} style={this.state.stepNumber===move || (winner && move >= this.state.stepNumber - 2) ? { fontWeight: 'bold'} : {}} >{desc}</button>
           </li>
         )
       });
@@ -99,10 +110,12 @@ import './index.css';
       let status;
       if(winner){
         status = 'Wygrywa: ' + winner;
+      }else if(this.state.history.length === 10){
+        status = 'Remis: Brak mozliwych ruchow';
       }else{
         status = 'Nastepny gracz: ' + (this.state.xIsNext ? 'X' : '0');
       }
-
+      
       return (
         <div className="game">
           <div className="game-board">
@@ -113,7 +126,7 @@ import './index.css';
           </div>
           <div className="game-info">
             <div>{status}</div>
-            <ol>{moves}</ol>
+            <ol>{sort}{this.state.sortOrder ? moves.reverse() : moves}</ol>
           </div>
         </div>
       );
